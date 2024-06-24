@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Projet1_ApplicationConsole
 {
-    internal class Course
+    public class Course
     {
         public int ID { get; }
 
@@ -18,10 +18,7 @@ namespace Projet1_ApplicationConsole
           ID = id;
         }
               
-        public void DeleteCourse(int idOfCours)
-        {
-            
-        }
+        
 
     }
 }

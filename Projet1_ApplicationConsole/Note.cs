@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Projet1_ApplicationConsole
 {
-    internal class Note
+    public class Note
     {
-        public double ID { get; }
+       
         public Course Course { get;  }
 
         public Student Student { get;  }
@@ -16,6 +16,7 @@ namespace Projet1_ApplicationConsole
         public double Value { get; set; }
 
         public string Appreciation { get; set; }
+        
 
         public Note (  Student studentToNote, Course courseToNote, double value, string appreciation ="" )
         {
@@ -28,6 +29,11 @@ namespace Projet1_ApplicationConsole
         public Course GetTheNoteCourse()
         {
             return Course;
+        }
+
+        public void DeleteNotesByCourse(Course course)
+        {
+            
         }
     }
 }

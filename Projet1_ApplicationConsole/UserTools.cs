@@ -10,6 +10,10 @@ namespace Projet1_ApplicationConsole
 {
     internal class UserTools
     {
+        public const string MESSAGEADDCONTINUE = "Adding a new {0}. Press any key to continue or 'Escape' to exit";
+        public const string MESSAGELINESEPARATOR = "\n-----------------------------------------------------------------\n";
+        public const int MAXNOTE = 20;
+
         public List<Student> StudentsList { get; }
         public List<Course> CoursesList { get; }
 
@@ -17,13 +21,14 @@ namespace Projet1_ApplicationConsole
         {
             this.StudentsList = studentsList;
             this.CoursesList = coursesList;
+
         }
 
         public void UserAddTheStudent()
         {
             ConsoleKey key = ConsoleKey.Add;
             Console.Clear();
-            string messageAddContinue = "Adding a new student. Press any key to continue or 'Escape' to exit";
+            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "student");//"Adding a new student. Press any key to continue or 'Escape' to exit";
 
             Console.WriteLine(messageAddContinue);
             key = Console.ReadKey(true).Key;
@@ -86,15 +91,52 @@ namespace Projet1_ApplicationConsole
         {
             foreach (Student student in StudentsList)
             {
-                Console.WriteLine("ID  :{0}. , First name:  {1}, Last name:  {2} ", student.ID, student.FirstName, student.LastName);
+                Console.WriteLine("ID  :{0}. First name:  {1}, Last name:  {2} ", student.ID, student.FirstName, student.LastName);
             }
+        }
+
+        public void DisplayInformationForStudent(Student selectedStudent)
+        {
+            Console.WriteLine(MESSAGELINESEPARATOR);
+
+            Console.WriteLine("Informations sur l'élève : \n ");
+            Console.WriteLine("{0,-18} {1,-20}", "Nom :", selectedStudent.FirstName);
+            Console.WriteLine("{0,-18} {1,-20}", "Prénom :", selectedStudent.LastName);
+            Console.WriteLine("{0,-18} {1,-20}", "Date de naissance :", selectedStudent.DateOfBirth.ToString("d"));
+
+        }
+
+        public void StudentInformation()
+        {
+            
+            int selectedIDStudent;
+
+            do
+            {
+                Console.Write("To select a student type corresponding ID from the list following:\n");
+                Console.Write(MESSAGELINESEPARATOR);
+                DisplayListOfStudents();
+                Console.Write(MESSAGELINESEPARATOR);
+                Console.Write("ID of student:");
+
+            } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) || StudentsList.Find(x => x.ID == selectedIDStudent) == null);
+
+            Console.Clear();
+            Student selectedStudent = StudentsList.Find(x => x.ID == selectedIDStudent);
+
+            DisplayInformationForStudent(selectedStudent);
+
+            DisplayInformationForStudentNotes(selectedStudent);
+
+
+
         }
         /////////////////////////////////////////////////////////////
         public void UserAddTheCourse()
         {
             ConsoleKey key = ConsoleKey.Add;
             Console.Clear();
-            string messageAddContinue = "Adding a new course. Press any key to continue or 'Escape' to exit";
+            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "course");//"Adding a new course. Press any key to continue or 'Escape' to exit";
 
             Console.WriteLine(messageAddContinue);
             key = Console.ReadKey(true).Key;
@@ -102,8 +144,8 @@ namespace Projet1_ApplicationConsole
             while (key != ConsoleKey.Escape)
             {
                 Course newCourse = CreateCourse();
-                Console.WriteLine("New course by ID {0} was added! ", newCourse.ID);
-                Console.WriteLine("  ");
+                Console.WriteLine("New course by ID {0} was added! \n", newCourse.ID);
+
                 Console.WriteLine(messageAddContinue);
                 key = Console.ReadKey(true).Key;
 
@@ -135,94 +177,141 @@ namespace Projet1_ApplicationConsole
             return result;
         }
 
-        /////////////////////////////////////////////////////////////////
-        public void UserAddNotes()
+        public void DisplayListOfCours()
         {
+            Console.WriteLine(MESSAGELINESEPARATOR);
+            foreach (Course stucoursent in CoursesList)
+            {
+                Console.WriteLine("ID  :{0}. Name: {1}", stucoursent.ID, stucoursent.Name);
+            }
+            Console.WriteLine(MESSAGELINESEPARATOR);
+        }
+
+        public void DeleteCourse()
+        {
+            int idCourseToDelete;
             ConsoleKey key = ConsoleKey.Add;
             Console.Clear();
-            string messageAddContinue = "Adding a new note. Press any key to continue or 'Escape' to exit";
+
+            do
+            {
+                Console.WriteLine("You want to delete a course. Select the ID of cours for delete, please. ");
+                DisplayListOfCours();
+            } while (!Int32.TryParse(Console.ReadLine(), out idCourseToDelete) || CoursesList.Find(x => x.ID == idCourseToDelete) == null);
+
+            Course courseToDelete = CoursesList.Find(x => x.ID == idCourseToDelete);
+
+            Console.WriteLine("Every note relating to this course will be deleted! Are you sure you want to delete the course {0}? Y/N", courseToDelete.Name);
+            do
+            {
+                Console.WriteLine("Enter Y to confirm or N to cancel deleting!");
+                key = Console.ReadKey(true).Key;
+            } while (key != ConsoleKey.Y && key != ConsoleKey.N);
+
+            if (key == ConsoleKey.Y)
+            {
+                foreach (Student student in StudentsList)
+                {
+                    student.DeleteNotesByCourse(courseToDelete);
+                }
+                CoursesList.Remove(courseToDelete);
+            }
+
+
+        }
+
+
+        /////////////////////////////////////////////////////////////////
+        public void AddNotes()
+        {
+            Console.Clear();
+            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "note"); 
 
             Console.WriteLine(messageAddContinue);
-            key = Console.ReadKey(true).Key;
             int selectedIDStudent;
 
             do
             {
                 Console.Write("To select a student type corresponding ID from the list following:\n");
-                Console.Write("-----------------------------------------------------------------\n");
+                Console.Write(MESSAGELINESEPARATOR);
                 DisplayListOfStudents();
-                Console.Write("-----------------------------------------------------------------\n");
+                Console.Write(MESSAGELINESEPARATOR);
                 Console.Write("ID of student:");
 
-            } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) && StudentsList.Find(x => x.ID == selectedIDStudent) != null);
-
+            } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) || StudentsList.Find(x => x.ID == selectedIDStudent) == null);
 
             Console.Clear();
             Student selectedStudent = StudentsList.Find(x => x.ID == selectedIDStudent);
-            Console.WriteLine("Student selected : " + selectedStudent.FirstName + " " + selectedStudent.LastName);
+
+            DisplayInformationForStudent(selectedStudent);
 
             CreateNoteForStudentParCours(selectedStudent);
 
-
-            //while (key != ConsoleKey.Escape)
-            //{
-            //    Note newNote = CreateNote();
-            //    Console.WriteLine("New course by ID {0} was added! ", newCourse.ID);
-            //    Console.WriteLine("  ");
-            //    Console.WriteLine(messageAddContinue);
-            //    key = Console.ReadKey(true).Key;
-
-            //}
         }
 
 
-        public void DisplayListOfCours()
-        {
-            foreach (Course stucoursent in CoursesList)
-            {
-                Console.WriteLine("ID  :{0}., Name: {1}", stucoursent.ID, stucoursent.Name);
-            }
-        }
         //////////////////////////////////////////////////
         public void CreateNoteForStudentParCours(Student student)
         {
             int selectedIDCourse;
             ConsoleKey key = ConsoleKey.Add;
 
-            string messageAddContinue = "Adding a new note. Press any key to continue or 'Escape' to exit";
+            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "note");
 
             Console.WriteLine(messageAddContinue);
             key = Console.ReadKey(true).Key;
-            int selectedIDStudent;
+
             while (key != ConsoleKey.Escape)
             {
                 do
                 {
-                    Console.Write("To select a course type corresponding ID from the list following: ");
+                    Console.Write("To select a course type corresponding ID from the list following:\n");
                     DisplayListOfCours();
 
-                } while (!Int32.TryParse(Console.ReadLine(), out selectedIDCourse) && CoursesList.Find(x => x.ID == selectedIDCourse) != null);
+                } while (!Int32.TryParse(Console.ReadLine(), out selectedIDCourse) || CoursesList.Find(x => x.ID == selectedIDCourse) == null);
 
-                Console.WriteLine("  ");
                 Course selectedCours = CoursesList.Find(x => x.ID == selectedIDCourse);
-                Console.WriteLine("Selected course: " + selectedCours.Name);
-                Console.WriteLine("  ");
+                Console.WriteLine("Selected course: " + selectedCours.Name + "\n");
+
                 int noteOfCourse;
                 do
                 {
-
-                    Console.WriteLine("Enter note :");
+                    Console.Write("Enter note :");
 
                 } while (!Int32.TryParse(Console.ReadLine(), out noteOfCourse));
 
-                Console.WriteLine("Enter appreciation :");
+                Console.Write("Enter appreciation :");
 
                 string appreciation = Console.ReadLine();
 
-                Note newNote = new Note(student, selectedCours, noteOfCourse, appreciation);
+                student.AddTheNoteForStudent(selectedCours, noteOfCourse, appreciation);
+               
                 key = Console.ReadKey(true).Key;
             }
+        }
+
+        public void DisplayInformationForStudentNotes(Student selectedStudent)
+        {
+            Console.WriteLine("Résultats scolaires:\n");
+
+            List<Note> studentNotes = selectedStudent.GetStudentsNotes();
+            double notesTotal = 0; double avarageNotes = 0;
+
+            foreach (Note note in studentNotes)
+            {
+                Console.WriteLine("\t Cours : " + note.Course.Name);
+                Console.WriteLine("\t \t Note : " + note.Value + "/" + Convert.ToString(MAXNOTE));
+                Console.WriteLine("\t \t Appréciation : " + note.Appreciation + "\n");
+
+                notesTotal = notesTotal + note.Value;
             }
+            if (studentNotes.Count != 0) avarageNotes = notesTotal / studentNotes.Count;
+
+            Console.WriteLine("\t Moyenne : " + Convert.ToString(avarageNotes) + "\n");
+            Console.Write(MESSAGELINESEPARATOR);
+        }
+
+
     }
 
 
