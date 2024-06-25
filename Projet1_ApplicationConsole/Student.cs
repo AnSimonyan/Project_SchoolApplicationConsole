@@ -14,7 +14,7 @@ namespace Projet1_ApplicationConsole
         public string LastName { get; }
         public DateTime DateOfBirth { get; }
 
-        private List<Note> NotesOfStudent = new List<Note>();
+        public List<Note> NotesOfStudent;
 
         public Student(string firstName, string lastName, DateTime dateOfBirth, int id)
         {
@@ -22,6 +22,7 @@ namespace Projet1_ApplicationConsole
             FirstName = firstName;
             DateOfBirth = dateOfBirth;
             ID = id;
+            NotesOfStudent = new List<Note>();
         }
 
         public void DeleteNotesByCourse(Course course)
@@ -29,9 +30,9 @@ namespace Projet1_ApplicationConsole
             NotesOfStudent.RemoveAll(x => x.Course == course);
         }
 
-        public void AddTheNoteForStudent(Course course, double note, string appreciation = "")
+        public void AddTheNoteForStudent(Course Cours, double note, string appreciation = "")
         {
-            Note noteToAdd = new Note(this, course, note, appreciation);
+            Note noteToAdd = new Note(Cours, note, appreciation);
             NotesOfStudent.Add(noteToAdd);
         }
 

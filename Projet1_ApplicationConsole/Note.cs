@@ -8,22 +8,26 @@ namespace Projet1_ApplicationConsole
 {
     public class Note
     {
-       
-        public Course Course { get;  }
 
-        public Student Student { get;  }
+        public Course Course { get; }
+
+        // public Student Student { get;  }
 
         public double Value { get; set; }
 
         public string Appreciation { get; set; }
-        
 
-        public Note (  Student studentToNote, Course courseToNote, double value, string appreciation ="" )
+        public int CourseID { get; set; } = 0;
+
+
+        public Note(Course courseToNote, double value, string appreciation = "")
         {
             Course = courseToNote;
-            Student = studentToNote;
+            //Student = studentToNote;
             Value = value;
             Appreciation = appreciation;
+            if (courseToNote != null)
+            { CourseID = courseToNote.ID; }
         }
 
         public Course GetTheNoteCourse()
@@ -31,9 +35,14 @@ namespace Projet1_ApplicationConsole
             return Course;
         }
 
-        public void DeleteNotesByCourse(Course course)
+        public Course GetTheNoteCourseByID(List<Course> coursList)
         {
-            
+            return coursList.Find(x => x.ID == CourseID);
         }
+
+        //public void DeleteNotesByCourse(Course course)
+        //{
+
+        //}
     }
 }

@@ -6,31 +6,30 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-
 namespace Projet1_ApplicationConsole
 {
     public class Menu
     {
-
         public List<Student> StudentsList { get; }
+       
         public List<Course> CoursesList { get; }
 
         private UserTools userTools; 
+        
         enum MenuScool
         {
             Students, Cours, Exit
         }
+        
         enum MenueStudents
         {
             ListStudents, CreateNewStudent, ViewExistingStudent, AddNotes, Exit
         }
+        
         enum MenueCourses
         {
             CoursesList, AddCourse, DeleteCourse, Exit
         }
-
-
-
 
         public Menu(bool canCancel, List<Student> studentsList, List<Course> courseList, int level = 0)
         {
@@ -115,15 +114,16 @@ namespace Projet1_ApplicationConsole
         private List<string> StudentsMetuLevel1()
         {
             List<string> listMenuStudents = new List<string>();
-            listMenuStudents.Add("1.Lister les élèves");
-            listMenuStudents.Add("2.Créer un nouvel élève");
-            listMenuStudents.Add("3.Consulter un élève existant");
-            listMenuStudents.Add("4.Ajouter une note et une appréciation pour un cours sur un élève existant");
-            listMenuStudents.Add("5.Revenir au menu principal");
+            listMenuStudents.Add("Lister les élèves");
+            listMenuStudents.Add("Créer un nouvel élève");
+            listMenuStudents.Add("Consulter un élève existant");
+            listMenuStudents.Add("Ajouter une note et une appréciation pour un cours sur un élève existant");
+            listMenuStudents.Add("Revenir au menu principal");
 
             return listMenuStudents;
 
         }
+        
         private List<string> MenuScoolList()
         {
             List<string> listMenuScool = new List<string>();
@@ -134,6 +134,7 @@ namespace Projet1_ApplicationConsole
             return listMenuScool;
 
         }
+       
         private List<string> CourseMetuLevel1()
         {
             List<string> listMenuScool = new List<string>();
@@ -143,7 +144,6 @@ namespace Projet1_ApplicationConsole
             listMenuScool.Add("Revenir au menu principal");
             return listMenuScool;
         }
-
 
         private void MenuMain(int menuLevel = 0)
 
@@ -225,7 +225,6 @@ namespace Projet1_ApplicationConsole
             }
         }
 
-
         private void SwichMenueCourses(int input)
         {
             
@@ -262,7 +261,7 @@ namespace Projet1_ApplicationConsole
 
         private void ReturnMenuInputLevel(int inputLevel)
         {
-            Console.WriteLine("Press enter to continue...");
+            Console.WriteLine("Press ENTER to continue...");
             ConsoleKey key = ConsoleKey.N;
             do
             {
@@ -273,10 +272,6 @@ namespace Projet1_ApplicationConsole
             MenuMain(inputLevel);
         }
 
-
-
     }
-
-
 
 }

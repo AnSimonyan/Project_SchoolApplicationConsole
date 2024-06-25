@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
+
+
 namespace Projet1_ApplicationConsole
 {
-    internal class UserTools
+    public class UserTools
     {
-        public const string MESSAGEADDCONTINUE = "Adding a new {0}. Press any key to continue or 'Escape' to exit";
-        public const string MESSAGELINESEPARATOR = "\n-----------------------------------------------------------------\n";
-        public const int MAXNOTE = 20;
+       
 
         public List<Student> StudentsList { get; }
         public List<Course> CoursesList { get; }
@@ -28,7 +28,7 @@ namespace Projet1_ApplicationConsole
         {
             ConsoleKey key = ConsoleKey.Add;
             Console.Clear();
-            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "student");//"Adding a new student. Press any key to continue or 'Escape' to exit";
+            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "student");//"Adding a new student. Press any key to continue or 'Escape' to exit";
 
             Console.WriteLine(messageAddContinue);
             key = Console.ReadKey(true).Key;
@@ -73,7 +73,7 @@ namespace Projet1_ApplicationConsole
 
             Student newStudent = new Student(firstName, lastName, dateOfBirth, maxID);
             StudentsList.Add(newStudent);
-
+            JsonFiles.SaveJsonFile(this);
             return newStudent;
         }
 
@@ -91,19 +91,19 @@ namespace Projet1_ApplicationConsole
         {
             foreach (Student student in StudentsList)
             {
-                Console.WriteLine("ID  :{0}. First name:  {1}, Last name:  {2} ", student.ID, student.FirstName, student.LastName);
+                Console.WriteLine("ID  :{0,5}. First name:  {1,-10}  Last name:  {2,-20} ", student.ID, student.FirstName, student.LastName);
             }
         }
 
         public void DisplayInformationForStudent(Student selectedStudent)
         {
-            Console.WriteLine(MESSAGELINESEPARATOR);
-
+            Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
+           
             Console.WriteLine("Informations sur l'élève : \n ");
-            Console.WriteLine("{0,-18} {1,-20}", "Nom :", selectedStudent.FirstName);
-            Console.WriteLine("{0,-18} {1,-20}", "Prénom :", selectedStudent.LastName);
-            Console.WriteLine("{0,-18} {1,-20}", "Date de naissance :", selectedStudent.DateOfBirth.ToString("d"));
-
+            Console.WriteLine("{0,-18} {1,-22}", "Nom :", selectedStudent.FirstName);
+            Console.WriteLine("{0,-18} {1,-22}", "Prénom :", selectedStudent.LastName);
+            Console.WriteLine("{0,-18} {1,-22}", "Date de naissance :", selectedStudent.DateOfBirth.ToString("d"));
+            
         }
 
         public void StudentInformation()
@@ -114,9 +114,9 @@ namespace Projet1_ApplicationConsole
             do
             {
                 Console.Write("To select a student type corresponding ID from the list following:\n");
-                Console.Write(MESSAGELINESEPARATOR);
+                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
                 DisplayListOfStudents();
-                Console.Write(MESSAGELINESEPARATOR);
+                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
                 Console.Write("ID of student:");
 
             } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) || StudentsList.Find(x => x.ID == selectedIDStudent) == null);
@@ -136,7 +136,7 @@ namespace Projet1_ApplicationConsole
         {
             ConsoleKey key = ConsoleKey.Add;
             Console.Clear();
-            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "course");//"Adding a new course. Press any key to continue or 'Escape' to exit";
+            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "course");
 
             Console.WriteLine(messageAddContinue);
             key = Console.ReadKey(true).Key;
@@ -164,6 +164,8 @@ namespace Projet1_ApplicationConsole
             Course newCourse = new Course(courseName, maxID);
             CoursesList.Add(newCourse);
 
+            JsonFiles.SaveJsonFile(this);
+
             return newCourse;
         }
 
@@ -179,12 +181,12 @@ namespace Projet1_ApplicationConsole
 
         public void DisplayListOfCours()
         {
-            Console.WriteLine(MESSAGELINESEPARATOR);
+            Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
             foreach (Course stucoursent in CoursesList)
             {
                 Console.WriteLine("ID  :{0}. Name: {1}", stucoursent.ID, stucoursent.Name);
             }
-            Console.WriteLine(MESSAGELINESEPARATOR);
+            Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
         }
 
         public void DeleteCourse()
@@ -225,7 +227,7 @@ namespace Projet1_ApplicationConsole
         public void AddNotes()
         {
             Console.Clear();
-            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "note"); 
+            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note"); 
 
             Console.WriteLine(messageAddContinue);
             int selectedIDStudent;
@@ -233,9 +235,9 @@ namespace Projet1_ApplicationConsole
             do
             {
                 Console.Write("To select a student type corresponding ID from the list following:\n");
-                Console.Write(MESSAGELINESEPARATOR);
+                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
                 DisplayListOfStudents();
-                Console.Write(MESSAGELINESEPARATOR);
+                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
                 Console.Write("ID of student:");
 
             } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) || StudentsList.Find(x => x.ID == selectedIDStudent) == null);
@@ -247,6 +249,7 @@ namespace Projet1_ApplicationConsole
 
             CreateNoteForStudentParCours(selectedStudent);
 
+            JsonFiles.SaveJsonFile(this);
         }
 
 
@@ -256,10 +259,16 @@ namespace Projet1_ApplicationConsole
             int selectedIDCourse;
             ConsoleKey key = ConsoleKey.Add;
 
-            string messageAddContinue = MESSAGEADDCONTINUE.Replace("{0}", "note");
+            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note");
 
             Console.WriteLine(messageAddContinue);
             key = Console.ReadKey(true).Key;
+
+            if (CoursesList.Count == 0)
+            {
+                Console.WriteLine("There is no courses added. Add at first a course");
+                return;
+            }
 
             while (key != ConsoleKey.Escape)
             {
@@ -267,8 +276,9 @@ namespace Projet1_ApplicationConsole
                 {
                     Console.Write("To select a course type corresponding ID from the list following:\n");
                     DisplayListOfCours();
+                    key = Console.ReadKey(true).Key;
 
-                } while (!Int32.TryParse(Console.ReadLine(), out selectedIDCourse) || CoursesList.Find(x => x.ID == selectedIDCourse) == null);
+                } while (!Int32.TryParse(Console.ReadLine(), out selectedIDCourse) || CoursesList.Find(x => x.ID == selectedIDCourse) == null );
 
                 Course selectedCours = CoursesList.Find(x => x.ID == selectedIDCourse);
                 Console.WriteLine("Selected course: " + selectedCours.Name + "\n");
@@ -285,7 +295,9 @@ namespace Projet1_ApplicationConsole
                 string appreciation = Console.ReadLine();
 
                 student.AddTheNoteForStudent(selectedCours, noteOfCourse, appreciation);
-               
+
+                
+
                 key = Console.ReadKey(true).Key;
             }
         }
@@ -296,19 +308,22 @@ namespace Projet1_ApplicationConsole
 
             List<Note> studentNotes = selectedStudent.GetStudentsNotes();
             double notesTotal = 0; double avarageNotes = 0;
-
-            foreach (Note note in studentNotes)
+            if (studentNotes != null)
             {
-                Console.WriteLine("\t Cours : " + note.Course.Name);
-                Console.WriteLine("\t \t Note : " + note.Value + "/" + Convert.ToString(MAXNOTE));
-                Console.WriteLine("\t \t Appréciation : " + note.Appreciation + "\n");
+                foreach (Note note in studentNotes)
+                {
+                    //Console.WriteLine("\t Cours : " + note.Course.Name);
+                    Console.WriteLine("\t Cours : " + note.GetTheNoteCourseByID(CoursesList).Name);
+                    Console.WriteLine("\t \t Note : " + note.Value + "/" + Convert.ToString(ConstantsAPP.MAXNOTE));
+                    Console.WriteLine("\t \t Appréciation : " + note.Appreciation + "\n");
 
-                notesTotal = notesTotal + note.Value;
+                    notesTotal = notesTotal + note.Value;
+                }
             }
             if (studentNotes.Count != 0) avarageNotes = notesTotal / studentNotes.Count;
 
-            Console.WriteLine("\t Moyenne : " + Convert.ToString(avarageNotes) + "\n");
-            Console.Write(MESSAGELINESEPARATOR);
+            Console.WriteLine("\t Moyenne : " + Convert.ToString(avarageNotes));
+            Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
         }
 
 
