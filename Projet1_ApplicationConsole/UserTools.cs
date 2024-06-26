@@ -13,7 +13,7 @@ namespace Projet1_ApplicationConsole
 {
     public class UserTools
     {
-       
+
 
         public List<Student> StudentsList { get; }
         public List<Course> CoursesList { get; }
@@ -83,14 +83,14 @@ namespace Projet1_ApplicationConsole
         private int GetMaxIDOfStudents()
         {
             int result = 0;
-            if (StudentsList.Count != 0)  result = StudentsList.Max(x => x.ID);
+            if (StudentsList.Count != 0) result = StudentsList.Max(x => x.ID);
             return result;
         }
 
         public void DisplayListOfStudents()
         {
             foreach (Student student in StudentsList) Console.WriteLine("ID  :{0,5}. First name:  {1,-10}  Last name:  {2,-20} ", student.ID, student.FirstName, student.LastName);
-                      
+
             Log.Information("Consultation de la liste des élèves.");
 
         }
@@ -98,7 +98,7 @@ namespace Projet1_ApplicationConsole
         public void DisplayInformationForStudent(Student selectedStudent)
         {
             Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
-           
+
             Console.WriteLine("Informations sur l'élève : \n ");
             Console.WriteLine("{0,-18} {1,-23}", "Nom :", selectedStudent.FirstName);
             Console.WriteLine("{0,-18} {1,-23}", "Prénom :", selectedStudent.LastName);
@@ -109,7 +109,7 @@ namespace Projet1_ApplicationConsole
 
         public void StudentInformation()
         {
-            
+
             int selectedIDStudent;
 
             do
@@ -129,7 +129,7 @@ namespace Projet1_ApplicationConsole
 
             DisplayInformationForStudentNotes(selectedStudent);
 
-            Log.Information("Consultation des détails de l'élève: "+ selectedStudent.ID);
+            Log.Information("Consultation des détails de l'élève: " + selectedStudent.ID);
 
         }
         /////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ namespace Projet1_ApplicationConsole
 
             Course newCourse = new Course(courseName, maxID);
             CoursesList.Add(newCourse);
-            
+
             Log.Information("Ajout d'un nouveau cours : " + courseName);
             JsonFiles.SaveJsonFile(this);
 
@@ -181,7 +181,7 @@ namespace Projet1_ApplicationConsole
         public void DisplayListOfCours()
         {
             Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
-            foreach (Course stucoursent in CoursesList)  Console.WriteLine("ID  :{0}. Name: {1}", stucoursent.ID, stucoursent.Name);
+            foreach (Course stucoursent in CoursesList) Console.WriteLine("ID  :{0}. Name: {1}", stucoursent.ID, stucoursent.Name);
             Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
 
         }
@@ -205,14 +205,13 @@ namespace Projet1_ApplicationConsole
             {
                 Console.WriteLine("Enter Y to confirm or N to cancel deleting!");
                 key = Console.ReadKey(true).Key;
+
             } while (key != ConsoleKey.Y && key != ConsoleKey.N);
 
             if (key == ConsoleKey.Y)
             {
-                foreach (Student student in StudentsList)
-                {
-                    student.DeleteNotesByCourse(courseToDelete.ID);
-                }
+                foreach (Student student in StudentsList) student.DeleteNotesByCourse(courseToDelete.ID);
+                
                 CoursesList.Remove(courseToDelete);
             }
 
@@ -228,11 +227,10 @@ namespace Projet1_ApplicationConsole
         public void AddNotes()
         {
             Console.Clear();
-            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note"); 
+            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note");
 
             Console.WriteLine(messageAddContinue);
-            int selectedIDStudent;
-
+            int selectedIDStudent; 
             do
             {
                 Console.Write("To select a student type corresponding ID from the list following:\n");
@@ -240,6 +238,7 @@ namespace Projet1_ApplicationConsole
                 DisplayListOfStudents();
                 Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
                 Console.Write("ID of student:");
+                
 
             } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) || StudentsList.Find(x => x.ID == selectedIDStudent) == null);
 
@@ -251,7 +250,7 @@ namespace Projet1_ApplicationConsole
             CreateNoteForStudentParCours(selectedStudent);
 
             JsonFiles.SaveJsonFile(this);
-            
+
         }
 
 
@@ -259,12 +258,8 @@ namespace Projet1_ApplicationConsole
         public void CreateNoteForStudentParCours(Student student)
         {
             int selectedIDCourse;
-            ConsoleKey key = ConsoleKey.Add;
 
-            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note");
-
-            Console.WriteLine(messageAddContinue);
-            key = Console.ReadKey(true).Key;
+            //string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note");
 
             if (CoursesList.Count == 0)
             {
@@ -272,37 +267,33 @@ namespace Projet1_ApplicationConsole
                 return;
             }
 
-            while (key != ConsoleKey.Escape)
+            // Console.WriteLine(messageAddContinue);
+
+            do
             {
-                do
-                {
-                    Console.Write("To select a course type corresponding ID from the list following:\n");
-                    DisplayListOfCours();
-                    key = Console.ReadKey(true).Key;
+                Console.Write("To select a course type corresponding ID from the list following:\n");
+                DisplayListOfCours();
 
-                } while (!Int32.TryParse(Console.ReadLine(), out selectedIDCourse) || CoursesList.Find(x => x.ID == selectedIDCourse) == null );
+            } while (!Int32.TryParse(Console.ReadLine(), out selectedIDCourse) || CoursesList.Find(x => x.ID == selectedIDCourse) == null);
 
-                Course selectedCours = CoursesList.Find(x => x.ID == selectedIDCourse);
-                Console.WriteLine("Selected course: " + selectedCours.Name + "\n");
+            Course selectedCours = CoursesList.Find(x => x.ID == selectedIDCourse);
+            Console.WriteLine("Selected course: " + selectedCours.Name + "\n");
 
-                int noteOfCourse;
-                do
-                {
-                    Console.Write("Enter note :");
-                    key = Console.ReadKey(true).Key;
+            uint noteOfCourse;
+            do
+            {
+                Console.Write("Enter note :");
+            } while (!UInt32.TryParse(Console.ReadLine(), out noteOfCourse) || noteOfCourse > 20);
 
-                } while (!Int32.TryParse(Console.ReadLine(), out noteOfCourse));
+            Console.Write("Enter appreciation :");
 
-                Console.Write("Enter appreciation :");
+            string? appreciation = Console.ReadLine();
 
-                string appreciation = Console.ReadLine();
+            student.AddTheNoteForStudent(selectedCours, noteOfCourse, appreciation);
 
-                student.AddTheNoteForStudent(selectedCours, noteOfCourse, appreciation);
-                
-                Log.Information("Add note:" + selectedCours.Name +  noteOfCourse +"/" + ConstantsAPP.MAXNOTE + " " + appreciation);
+            Log.Information("Add note:" + selectedCours.Name + noteOfCourse + "/" + ConstantsAPP.MAXNOTE + " " + appreciation);
 
-                
-            }
+
         }
 
         public void DisplayInformationForStudentNotes(Student selectedStudent)
