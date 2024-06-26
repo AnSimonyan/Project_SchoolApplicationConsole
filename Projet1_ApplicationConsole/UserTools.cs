@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -74,25 +75,24 @@ namespace Projet1_ApplicationConsole
             Student newStudent = new Student(firstName, lastName, dateOfBirth, maxID);
             StudentsList.Add(newStudent);
             JsonFiles.SaveJsonFile(this);
+            Log.Information("CreateStudent");
+
             return newStudent;
         }
 
         private int GetMaxIDOfStudents()
         {
             int result = 0;
-            if (StudentsList.Count != 0)
-            {
-                result = StudentsList.Max(x => x.ID);
-            }
+            if (StudentsList.Count != 0)  result = StudentsList.Max(x => x.ID);
             return result;
         }
 
         public void DisplayListOfStudents()
         {
-            foreach (Student student in StudentsList)
-            {
-                Console.WriteLine("ID  :{0,5}. First name:  {1,-10}  Last name:  {2,-20} ", student.ID, student.FirstName, student.LastName);
-            }
+            foreach (Student student in StudentsList) Console.WriteLine("ID  :{0,5}. First name:  {1,-10}  Last name:  {2,-20} ", student.ID, student.FirstName, student.LastName);
+                      
+            Log.Information("Consultation de la liste des élèves.");
+
         }
 
         public void DisplayInformationForStudent(Student selectedStudent)
@@ -100,10 +100,11 @@ namespace Projet1_ApplicationConsole
             Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
            
             Console.WriteLine("Informations sur l'élève : \n ");
-            Console.WriteLine("{0,-18} {1,-22}", "Nom :", selectedStudent.FirstName);
-            Console.WriteLine("{0,-18} {1,-22}", "Prénom :", selectedStudent.LastName);
+            Console.WriteLine("{0,-18} {1,-23}", "Nom :", selectedStudent.FirstName);
+            Console.WriteLine("{0,-18} {1,-23}", "Prénom :", selectedStudent.LastName);
             Console.WriteLine("{0,-18} {1,-22}", "Date de naissance :", selectedStudent.DateOfBirth.ToString("d"));
-            
+
+
         }
 
         public void StudentInformation()
@@ -128,7 +129,7 @@ namespace Projet1_ApplicationConsole
 
             DisplayInformationForStudentNotes(selectedStudent);
 
-
+            Log.Information("Consultation des détails de l'élève: "+ selectedStudent.ID);
 
         }
         /////////////////////////////////////////////////////////////
@@ -163,7 +164,8 @@ namespace Projet1_ApplicationConsole
 
             Course newCourse = new Course(courseName, maxID);
             CoursesList.Add(newCourse);
-
+            
+            Log.Information("Ajout d'un nouveau cours : " + courseName);
             JsonFiles.SaveJsonFile(this);
 
             return newCourse;
@@ -172,21 +174,16 @@ namespace Projet1_ApplicationConsole
         private int GetMaxIDOfCourses()
         {
             int result = 0;
-            if (CoursesList.Count != 0)
-            {
-                result = CoursesList.Max(x => x.ID);
-            }
+            if (CoursesList.Count != 0) result = CoursesList.Max(x => x.ID);
             return result;
         }
 
         public void DisplayListOfCours()
         {
             Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
-            foreach (Course stucoursent in CoursesList)
-            {
-                Console.WriteLine("ID  :{0}. Name: {1}", stucoursent.ID, stucoursent.Name);
-            }
+            foreach (Course stucoursent in CoursesList)  Console.WriteLine("ID  :{0}. Name: {1}", stucoursent.ID, stucoursent.Name);
             Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
+
         }
 
         public void DeleteCourse()
@@ -214,10 +211,14 @@ namespace Projet1_ApplicationConsole
             {
                 foreach (Student student in StudentsList)
                 {
-                    student.DeleteNotesByCourse(courseToDelete);
+                    student.DeleteNotesByCourse(courseToDelete.ID);
                 }
                 CoursesList.Remove(courseToDelete);
             }
+
+            JsonFiles.SaveJsonFile(this);
+
+            Log.Information("Supprimer le cours :" + courseToDelete);
 
 
         }
@@ -250,6 +251,7 @@ namespace Projet1_ApplicationConsole
             CreateNoteForStudentParCours(selectedStudent);
 
             JsonFiles.SaveJsonFile(this);
+            
         }
 
 
@@ -287,6 +289,7 @@ namespace Projet1_ApplicationConsole
                 do
                 {
                     Console.Write("Enter note :");
+                    key = Console.ReadKey(true).Key;
 
                 } while (!Int32.TryParse(Console.ReadLine(), out noteOfCourse));
 
@@ -295,10 +298,10 @@ namespace Projet1_ApplicationConsole
                 string appreciation = Console.ReadLine();
 
                 student.AddTheNoteForStudent(selectedCours, noteOfCourse, appreciation);
+                
+                Log.Information("Add note:" + selectedCours.Name +  noteOfCourse +"/" + ConstantsAPP.MAXNOTE + " " + appreciation);
 
                 
-
-                key = Console.ReadKey(true).Key;
             }
         }
 
