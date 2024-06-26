@@ -24,6 +24,8 @@ namespace Projet1_ApplicationConsole
 
             Log.Information("Start");
             UserTools deserializedUserTools = JsonFiles.ReadJsonFile();
+           // UserTools deserializedUserTools = JsonFiles.ReadJsonFile();
+
 
             if (deserializedUserTools != null)
             {
