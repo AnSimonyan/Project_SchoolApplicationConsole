@@ -32,17 +32,9 @@ namespace Projet1_ApplicationConsole
                 CoursesList = deserializedUserTools.CoursesList;
             }
             Menu menu = new Menu(true, StudentsList, CoursesList);
-
             
 
-
-
-
-
-
         }
-
-
 
 
     }
