@@ -25,9 +25,9 @@ namespace Projet1_ApplicationConsole
             NotesOfStudent = new List<Note>();
         }
 
-        public void DeleteNotesByCourse(Course course)
+        public void DeleteNotesByCourse(int courseID)
         {
-            NotesOfStudent.RemoveAll(x => x.Course == course);
+            NotesOfStudent.RemoveAll(x => x.CourseID == courseID);
         }
 
         public void AddTheNoteForStudent(Course Cours, double note, string appreciation = "")
