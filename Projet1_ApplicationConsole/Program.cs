@@ -22,6 +22,8 @@ namespace Projet1_ApplicationConsole
             .WriteTo.File(ConstantsAPP.LOGPATH, rollingInterval: RollingInterval.Day)  // Log to a file
             .CreateLogger();
 
+
+            Log.Information("Start");
             UserTools deserializedUserTools = JsonFiles.ReadJsonFile();
 
             if (deserializedUserTools != null)
@@ -31,17 +33,9 @@ namespace Projet1_ApplicationConsole
                 CoursesList = deserializedUserTools.CoursesList;
             }
             Menu menu = new Menu(true, StudentsList, CoursesList);
-
             
 
-
-
-
-
-
         }
-
-
 
 
     }
