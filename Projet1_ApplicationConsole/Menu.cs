@@ -10,12 +10,14 @@ namespace Projet1_ApplicationConsole
 {
     public class Menu
     {
-        public List<Student> StudentsList { get; }
-       
-        public List<Course> CoursesList { get; }
+       // private protected List<Student> _studentsList;
 
-        private UserTools userTools; 
-        
+        //private protected List<Course> _coursesList;
+
+       // private protected AppTools _appTools;
+
+        private protected UserTools _userTools;
+
         enum MenuScool
         {
             Students, Cours, Exit
@@ -31,11 +33,12 @@ namespace Projet1_ApplicationConsole
             CoursesList, AddCourse, DeleteCourse, Exit
         }
 
-        public Menu(bool canCancel, List<Student> studentsList, List<Course> courseList, int level = 0)
+        public Menu(bool canCancel, AppData appTools, int level = 0)
         {
-            this.StudentsList = studentsList;
-            this.CoursesList = courseList;
-            userTools = new UserTools(studentsList, courseList);
+            //this._studentsList = appTools.StudentsList;
+            //this._coursesList = appTools.CoursesList;
+            _userTools = new UserTools (appTools);
+
             while (true)
             {
                 MenuMain(level);
@@ -197,24 +200,24 @@ namespace Projet1_ApplicationConsole
                 case MenueStudents.ListStudents:
                     Console.WriteLine(" \n");
                     Console.WriteLine("Your choice: Settings");
-                    userTools.DisplayListOfStudents();
+                    _userTools.DisplayListOfStudents();
                     ReturnMenuInputLevel(1);
                     break;
                 case MenueStudents.CreateNewStudent:
                     Console.WriteLine(" \n");
-                    userTools.CreateStudent();
+                    _userTools.CreateStudent();
                     ReturnMenuInputLevel(1);
                     break;
 
                 case MenueStudents.ViewExistingStudent:
                     Console.WriteLine(" \n");
-                    userTools.StudentInformation();
+                    _userTools.StudentInformation();
                     ReturnMenuInputLevel(1);
                     break;
                 case MenueStudents.AddNotes:
                     Console.WriteLine(" \n");
 
-                    userTools.AddNotes();
+                    _userTools.AddNotes();
                     ReturnMenuInputLevel(1);
                     break;
                 case MenueStudents.Exit:
@@ -233,19 +236,19 @@ namespace Projet1_ApplicationConsole
                 case MenueCourses.CoursesList:
                     Console.WriteLine(" \n");
                     //Console.WriteLine("Your choice: Settings");
-                    userTools.DisplayListOfCours();
+                    _userTools.DisplayListOfCours();
                     ReturnMenuInputLevel(2);
 
                     break;
                 case MenueCourses.AddCourse:
                     Console.WriteLine(" \n");
-                    userTools.CreateCourse();
+                    _userTools.CreateCourse();
                     ReturnMenuInputLevel(2);
                     break;
 
                 case MenueCourses.DeleteCourse:
                     Console.WriteLine(" \n");
-                    userTools.DeleteCourse();
+                    _userTools.DeleteCourse();
                     ReturnMenuInputLevel(2);
                     break;
 

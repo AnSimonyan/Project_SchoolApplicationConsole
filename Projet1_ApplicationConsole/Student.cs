@@ -8,7 +8,6 @@ namespace Projet1_ApplicationConsole
 {
     public class Student
     {
-
         public int ID { get; }
         public string FirstName { get; }
         public string LastName { get; }
@@ -40,11 +39,6 @@ namespace Projet1_ApplicationConsole
         {
             return NotesOfStudent;
         }
-
-
-
-
-
     }
 }
 
