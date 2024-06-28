@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projet1_ApplicationConsole
+namespace Projet1_ApplicationConsole.App
 {
     public class Course
     {
@@ -14,11 +14,11 @@ namespace Projet1_ApplicationConsole
 
         public Course(string name, int id)
         {
-          Name = name;
-          ID = id;
+            Name = name;
+            ID = id;
         }
-              
-        
+
+
 
     }
 }

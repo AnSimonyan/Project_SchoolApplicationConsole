@@ -2,6 +2,8 @@
 using Serilog.Events;
 using Serilog;
 using System.Globalization;
+using Projet1_ApplicationConsole.Data;
+using Projet1_ApplicationConsole.Menus;
 
 
 namespace Projet1_ApplicationConsole
@@ -21,7 +23,7 @@ namespace Projet1_ApplicationConsole
             
             AppData appToolsMain = new AppData();
          
-            DatabaseTools dataInitised = new DatabaseTools();
+            Database dataInitised = new Database();
             
             appToolsMain = dataInitised.InitialiseData();
 

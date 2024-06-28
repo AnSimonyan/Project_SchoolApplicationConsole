@@ -12,11 +12,11 @@ using Serilog.Events;
 
 
 
-namespace Projet1_ApplicationConsole
+namespace Projet1_ApplicationConsole.Data
 {
-    public  class DatabaseTools : IDatabaseTools
-    {       
-        public  void SaveData(AppData inisialisedAppData)
+    public class Database : IDatabase
+    {
+        public void SaveData(AppData inisialisedAppData)
         {
             string fileNameStudents = ConstantsAPP.JSONFILENAME + "Scool.json";
 
@@ -26,7 +26,7 @@ namespace Projet1_ApplicationConsole
 
         }
 
-        public  AppData InitialiseData()
+        public AppData InitialiseData()
         {
             string fileNameStudents = ConstantsAPP.JSONFILENAME + "Scool.json";
             try
@@ -39,6 +39,8 @@ namespace Projet1_ApplicationConsole
                 return null;
             }
         }
+
+        
 
     }
 }

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projet1_ApplicationConsole
+namespace Projet1_ApplicationConsole.Data
 {
-    public interface IDatabaseTools
+    public interface IDatabase
     {
-        public void InitialiseData ( )
+        public void InitialiseData()
         {
-        
+
         }
 
         public void SaveData()
