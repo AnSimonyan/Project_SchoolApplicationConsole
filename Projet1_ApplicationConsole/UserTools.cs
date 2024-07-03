@@ -13,22 +13,17 @@ using System.Xml.Linq;
 
 namespace Projet1_ApplicationConsole
 {
-    public class UserTools
+    public static  class UserTools
     {
-        private AppData _appToolsInitialised;
-
-        public UserTools(AppData appToolsInitialised)
-        {
-            this._appToolsInitialised = appToolsInitialised;
-        }
-        public void Save()
+        
+        public static void Save(AppData _appDataInitialised)
         {
             Database dataTools = new Database();
-            dataTools.SaveData(_appToolsInitialised);
+            dataTools.SaveData(_appDataInitialised);
         }
         #region STUDENTS -------------------------------------------------------------------------->
 
-        public Student CreateStudent()
+        public static Student CreateStudent(AppData _appDataInitialised)
         {
             Console.Write("First name: ");
             string firstName = Console.ReadLine();
@@ -36,57 +31,65 @@ namespace Projet1_ApplicationConsole
             Console.Write("Last name: ");
             string lastName = Console.ReadLine();
 
-            Student newStudent = CreateStudentAndAddToList(firstName, lastName);
+            Student newStudent = CreateStudentAndAddToList(firstName, lastName, _appDataInitialised);
 
-            Save();
+            Save(_appDataInitialised);
 
             Log.Information("CreateStudent");
 
             return newStudent;
         }
 
-        public void StudentInformation()
+        public static void AddPromotionToStudent(AppData _appDataInitialised)
         {
-            Student selectedStudent = SelectStudentFromList();
+            string Promotion = DisplayInformation.EnterPromotion();
+            Student selectedSelected = SelectStudentFromList(_appDataInitialised);
+            DataTools.AddPromotionToStudent(selectedSelected, Promotion);
+            DisplayInformation.DisplayStudentWasChanged(selectedSelected);
+        }
+
+        public static void StudentInformation(AppData _appDataInitialised)
+        {
+            Student selectedStudent = SelectStudentFromList(_appDataInitialised);
 
             Console.Clear();
 
             DisplayInformation.DisplayInformationForStudent(selectedStudent);
 
-            DisplayInformation.DisplayInformationForStudentNotes(selectedStudent, _appToolsInitialised);
+            DisplayInformation.DisplayInformationForStudentNotes(selectedStudent, _appDataInitialised);
 
             Log.Information("Consultation des détails de l'élève: " + selectedStudent.ID);
         }
 
-        private Student CreateStudentAndAddToList(string firstName, string lastName)
+        private static Student CreateStudentAndAddToList(string firstName, string lastName, AppData _appDataInitialised)
         {
-           Student newStudent = DataTools.CreateNewStudent(_appToolsInitialised, firstName, lastName);
-           DataTools.AddStudentToTheList(_appToolsInitialised, newStudent);
+           Student newStudent = DataTools.CreateNewStudent(_appDataInitialised, firstName, lastName);
+           DataTools.AddStudentToTheList(_appDataInitialised, newStudent);
            return newStudent;
         }
 
-        private Student SelectStudentFromList()
+        private static Student SelectStudentFromList(AppData _appDataInitialised)
         {
-            uint selectedIDStudent = DisplayInformation.DisplayStudentsForSelection(_appToolsInitialised);
-            return DataTools.FindStudentByID(selectedIDStudent, _appToolsInitialised);
+            uint selectedIDStudent = DisplayInformation.DisplayStudentsForSelection(_appDataInitialised);
+            return DataTools.FindStudentByID(selectedIDStudent, _appDataInitialised);
         }
         #endregion <----------------------------------------------------------------------STUDENTS
 
         #region COURSE-------------------------------------------------------------------------->
-        public Course CreateCourse()
+        public static Course CreateCourse(AppData _appDataInitialised)
         {
-            Course newCourse = DataTools.CreateNewCourse(_appToolsInitialised, DisplayInformation.EnterNameOfCourse());
-            DataTools.AddCourseToTheList(_appToolsInitialised,newCourse);   
+            Course newCourse = DataTools.CreateNewCourse(_appDataInitialised, DisplayInformation.EnterNameOfCourse());
+            DataTools.AddCourseToTheList(_appDataInitialised,newCourse);   
             Log.Information("Ajout d'un nouveau cours : " + newCourse.Name);
-            Save();
+            Save(_appDataInitialised);
             return newCourse;
         }
 
-        public void DeleteCourse()
+        public static void DeleteCourse(AppData _appDataInitialised)
         {
             Console.WriteLine(ConstantsAPP.MESSAGEDELETECOURSE);
 
-            Course courseToDelete = CouseSelectionByID();
+            Course courseToDelete = CouseSelectionByID(_appDataInitialised);
 
             Console.WriteLine(ConstantsAPP.MESSAGEWARNINGDELETECOURSE, courseToDelete.Name);
 
@@ -94,69 +97,70 @@ namespace Projet1_ApplicationConsole
 
             if (deletingConfirmed)
             {
-                ConfirmationCourseDeleting(courseToDelete);
+                ConfirmationCourseDeleting(courseToDelete, _appDataInitialised);
              
-                Save();
+                Save(_appDataInitialised);
 
-                Log.Information("Supprimer le cours :" + courseToDelete);
+                Log.Information("Supprimer le cours :" + courseToDelete.Name);
             }
         }
   
 
-        private void ConfirmationCourseDeleting(Course courseToDelete)
+        private static void ConfirmationCourseDeleting(Course courseToDelete, AppData _appDataInitialised)
         {
-            foreach (Student student in _appToolsInitialised.StudentsList)
+            foreach (Student student in _appDataInitialised.StudentsList)
             {
                 student.DeleteNotesByCourse(courseToDelete.ID);
             }
-            _appToolsInitialised.CoursesList.Remove(courseToDelete);
+            _appDataInitialised.CoursesList.Remove(courseToDelete);
         }
 
        
-        private bool IsCoursesListIsEmpty()
+        private static bool IsListIsEmpty<T>( List<T> list)
         {
             bool resultat = false;
 
-            if (_appToolsInitialised.CoursesList.Count == 0)
+            if (list.Count == 0)
             {
-                Console.WriteLine("There is no courses added. Add at first a course");
+                
+                Console.WriteLine("There are no elements added. Add at first an elements " );
                 resultat = true;
             }
             return resultat;
         }
 
-        private Course CouseSelectionByID()
+        private static Course CouseSelectionByID(AppData _appDataInitialised)
         {
-            uint idCourse = DisplayInformation.DisplayCouresForSelection(_appToolsInitialised);
+            uint idCourse = DisplayInformation.DisplayCouresForSelection(_appDataInitialised);
 
-            return DataTools.FindCourseByID(idCourse, _appToolsInitialised);
+            return DataTools.FindCourseByID(idCourse, _appDataInitialised);
         }
         #endregion <-------------------------------------------------------------------------COURSES
 
         #region NOTES-------------------------------------------------------------------------->
-        public void AddNotes()
+        public static void AddNotes(AppData _appDataInitialised)
         {
             Console.Clear();
             string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note");
 
             Console.WriteLine(messageAddContinue);
 
-            Student selectedStudent = SelectStudentFromList();
+            Student selectedStudent = SelectStudentFromList( _appDataInitialised);
 
             Console.Clear();
 
             DisplayInformation.DisplayInformationForStudent(selectedStudent);
 
-            CreateNoteForStudentParCours(selectedStudent);
+            CreateNoteForStudentParCours(selectedStudent,  _appDataInitialised);
 
-            Save();
+            Save( _appDataInitialised);
         }
 
-        public void CreateNoteForStudentParCours(Student student)
+        public static void CreateNoteForStudentParCours(Student student, AppData _appDataInitialised)
         {
-            if (IsCoursesListIsEmpty()) return;
+            if (IsListIsEmpty(_appDataInitialised.CoursesList)) return;
 
-            Course selectedCours = CouseSelectionByID();
+            Course selectedCours = CouseSelectionByID( _appDataInitialised);
 
             Console.WriteLine("Selected course: " + selectedCours.Name + "\n");
 
@@ -170,5 +174,35 @@ namespace Projet1_ApplicationConsole
         }
 
         #endregion <--------------------------------------------------------------------------NOTES
+
+        #region PROMOTIONS-------------------------------------------------------------------------->
+        public static void StudentsListByPromotions(AppData _appDataInitialised)
+        {
+            DisplayInformation.DisplayStudentInformationByPromotions(DataTools.GetPromoStudentsList(_appDataInitialised));
+        }
+
+        public static void PromotionsList(AppData _appDataInitialised)
+        {
+            DisplayInformation.DisplayPromotions(DataTools.GetPromoStudentsList(_appDataInitialised));
+        }
+        public static void CoursesAvarageByPromotions(AppData _appDataInitialised)
+        {
+            string selectedPromo = DisplayInformation.SelectThePromotionFromList(DataTools.GetPromoStudentsList(_appDataInitialised), _appDataInitialised);
+            List<Student> studentsPromo = DataTools.GetStudentsListByPromo(_appDataInitialised, selectedPromo);
+            Dictionary<Course, List<double>> NotesTable = new Dictionary<Course, List<double>>();
+
+            foreach (Student student in studentsPromo)
+            {
+                foreach (Note note in student.NotesOfStudent)
+                {
+                    Course course = note.GetTheNoteCourseByID(_appDataInitialised.CoursesList);
+                    if (!NotesTable.ContainsKey(course)) NotesTable.Add(course, new List<double>());
+                    NotesTable[course].Add(note.Value);
+                }
+            }
+            DisplayInformation.DisplayCoursesPromo(NotesTable);
+        }
+
+        #endregion <--------------------------------------------------------------------------PROMOTIONS
     }
 }

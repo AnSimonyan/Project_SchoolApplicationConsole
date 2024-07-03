@@ -36,7 +36,7 @@ namespace Projet1_ApplicationConsole.Data
             }
             catch
             {
-                return null;
+                return new AppData();
             }
         }
 

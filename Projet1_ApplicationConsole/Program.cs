@@ -4,6 +4,7 @@ using Serilog;
 using System.Globalization;
 using Projet1_ApplicationConsole.Data;
 using Projet1_ApplicationConsole.Menus;
+using Projet1_ApplicationConsole.App;
 
 
 namespace Projet1_ApplicationConsole
@@ -28,6 +29,7 @@ namespace Projet1_ApplicationConsole
             appToolsMain = dataInitised.InitialiseData();
 
             Menu menu = new Menu(true, appToolsMain);
+
 
         }
     }

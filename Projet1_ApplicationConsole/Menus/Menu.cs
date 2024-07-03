@@ -22,7 +22,7 @@ namespace Projet1_ApplicationConsole.Menus
             }
         }
 
-        public static int MultipleChoice(Enum userEnum, List<string> menueFullName, int spacingPerLine = 18, int optionPerLine = 3)
+        public static int MultipleChoice(Enum userEnum, List<string> menueFullName, int spacingPerLine = 18, int optionPerLine = 4)
         {
             int currentSelection = 0; ConsoleKey key;
             int startX = 1; int startY = 1;

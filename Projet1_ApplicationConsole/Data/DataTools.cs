@@ -56,6 +56,21 @@ namespace Projet1_ApplicationConsole.Data
         {
             appData.StudentsList.Add(student);
         }
+
+        public static void AddPromotionToStudent(Student student, string promotion)
+        {
+            student.SetPromotion(promotion);
+        }
+
+        public static List<Student> GetPromoStudentsList(AppData appDataInitialised)
+        {
+            return appDataInitialised.StudentsList.FindAll(s => s.GetPromotion() != "").ToList();
+        }
+
+        public static List<Student> GetStudentsListByPromo(AppData appDataInitialised, string promo)
+        {
+            return appDataInitialised.StudentsList.FindAll(s => s.GetPromotion() == promo).ToList();
+        }
         #endregion <-----------------------------------------------------------STUDENTS
     }
 }

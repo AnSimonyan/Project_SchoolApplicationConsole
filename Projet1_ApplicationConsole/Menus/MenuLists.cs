@@ -36,7 +36,21 @@ namespace Projet1_ApplicationConsole.Menus
             List<string> listMenuScool = new List<string>();
             listMenuScool.Add("Elèves");
             listMenuScool.Add("Cours");
+            listMenuScool.Add("Promotion");
             listMenuScool.Add("Sortir");
+
+            return listMenuScool;
+        }
+
+        public static List<string> MenuPromotionLevel1()
+        {
+            List<string> listMenuScool = new List<string>();
+            listMenuScool.Add("Ajouter promotion aux étudiants");
+            listMenuScool.Add("Liste des promotions");
+            listMenuScool.Add("Liste des élèves en promotion");
+            listMenuScool.Add("Moyenne par cours de tous les élèves per promotion");
+            listMenuScool.Add("Moyenne de chaque promotion par cours");
+            listMenuScool.Add("Revenir au menu principal");
 
             return listMenuScool;
         }
