@@ -34,6 +34,8 @@ namespace Projet1_ApplicationConsole.App
 
         public void AddTheNoteForStudent(Course Cours, double note, string appreciation = "")
         {
+            if (NotesOfStudent.Any(n => n.CourseID == Cours.ID)) NotesOfStudent.RemoveAll(n => n.CourseID == Cours.ID);
+
             Note noteToAdd = new Note(Cours.ID, note, appreciation);
             NotesOfStudent.Add(noteToAdd);
         }
