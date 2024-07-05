@@ -1,336 +1,201 @@
-﻿using Serilog;
+﻿using Projet1_ApplicationConsole.App;
+using Projet1_ApplicationConsole.Data;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-
-
 namespace Projet1_ApplicationConsole
 {
-    public class UserTools
+    public static class UserTools
     {
-       
 
-        public List<Student> StudentsList { get; }
-        public List<Course> CoursesList { get; }
-
-        public UserTools(List<Student> studentsList, List<Course> coursesList)
+        public static void Save(AppData _appDataInitialised)
         {
-            this.StudentsList = studentsList;
-            this.CoursesList = coursesList;
-
+            Database dataTools = new Database();
+            dataTools.SaveData(_appDataInitialised);
         }
+        #region STUDENTS -------------------------------------------------------------------------->
 
-        public void UserAddTheStudent()
+        public static Student CreateStudent(AppData _appDataInitialised)
         {
-            ConsoleKey key = ConsoleKey.Add;
-            Console.Clear();
-            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "student");//"Adding a new student. Press any key to continue or 'Escape' to exit";
+            string firstName = ReadLineAndControls.ReadStringWithNullAndSpasesControl("First name: ");
+            string lastName = ReadLineAndControls.ReadStringWithNullAndSpasesControl("Last name: ");
 
-            Console.WriteLine(messageAddContinue);
-            key = Console.ReadKey(true).Key;
+            Student newStudent = CreateStudentAndAddToList(firstName, lastName, _appDataInitialised);
 
-            while (key != ConsoleKey.Escape)
-            {
+            Save(_appDataInitialised);
 
-                Student newStudent = CreateStudent();
-                Console.WriteLine("New student by ID {0} was added! ", newStudent.ID);
-                Console.WriteLine("  ");
-                Console.WriteLine(messageAddContinue);
-                key = Console.ReadKey(true).Key;
-
-            }
-        }
-
-        private DateTime GetingBirthDateInDateTime()
-        {
-            DateTime dateOfBirth;
-            string input;
-            do
-            {
-                Console.Write("Birthday (in format dd.mm.yyy): ");
-                input = Console.ReadLine();
-            }
-            while (!DateTime.TryParseExact(input, "dd.MM.yyyy", null, DateTimeStyles.None, out dateOfBirth));
-
-            return dateOfBirth;
-        }
-
-        public Student CreateStudent()
-        {
-            Console.Write("First name: ");
-            string firstName = Console.ReadLine();
-
-            Console.Write("Last name: ");
-            string lastName = Console.ReadLine();
-
-            DateTime dateOfBirth = GetingBirthDateInDateTime();
-
-            int maxID = GetMaxIDOfStudents() + 1;
-
-            Student newStudent = new Student(firstName, lastName, dateOfBirth, maxID);
-            StudentsList.Add(newStudent);
-            JsonFiles.SaveJsonFile(this);
             Log.Information("CreateStudent");
 
             return newStudent;
         }
 
-        private int GetMaxIDOfStudents()
+        public static void AddPromotionToStudent(AppData _appDataInitialised)
         {
-            int result = 0;
-            if (StudentsList.Count != 0)  result = StudentsList.Max(x => x.ID);
-            return result;
+            string Promotion = ReadLineAndControls.ReadStringWithNullAndSpasesControl("Enter promotion:").ToUpper();
+            Student selectedSelected = SelectStudentFromList(_appDataInitialised);
+            DataTools.AddPromotionToStudent(selectedSelected, Promotion);
+            DisplayInformation.DisplayStudentWasChanged(selectedSelected);
         }
 
-        public void DisplayListOfStudents()
+        public static void StudentInformation(AppData _appDataInitialised)
         {
-            foreach (Student student in StudentsList) Console.WriteLine("ID  :{0,5}. First name:  {1,-10}  Last name:  {2,-20} ", student.ID, student.FirstName, student.LastName);
-                      
-            Log.Information("Consultation de la liste des élèves.");
-
-        }
-
-        public void DisplayInformationForStudent(Student selectedStudent)
-        {
-            Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
-           
-            Console.WriteLine("Informations sur l'élève : \n ");
-            Console.WriteLine("{0,-18} {1,-23}", "Nom :", selectedStudent.FirstName);
-            Console.WriteLine("{0,-18} {1,-23}", "Prénom :", selectedStudent.LastName);
-            Console.WriteLine("{0,-18} {1,-22}", "Date de naissance :", selectedStudent.DateOfBirth.ToString("d"));
-
-
-        }
-
-        public void StudentInformation()
-        {
-            
-            int selectedIDStudent;
-
-            do
-            {
-                Console.Write("To select a student type corresponding ID from the list following:\n");
-                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
-                DisplayListOfStudents();
-                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
-                Console.Write("ID of student:");
-
-            } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) || StudentsList.Find(x => x.ID == selectedIDStudent) == null);
+            Student selectedStudent = SelectStudentFromList(_appDataInitialised);
 
             Console.Clear();
-            Student selectedStudent = StudentsList.Find(x => x.ID == selectedIDStudent);
 
-            DisplayInformationForStudent(selectedStudent);
+            DisplayInformation.DisplayInformationForStudent(selectedStudent);
 
-            DisplayInformationForStudentNotes(selectedStudent);
+            DisplayInformation.DisplayInformationForStudentNotes(selectedStudent, _appDataInitialised);
 
-            Log.Information("Consultation des détails de l'élève: "+ selectedStudent.ID);
-
-        }
-        /////////////////////////////////////////////////////////////
-        public void UserAddTheCourse()
-        {
-            ConsoleKey key = ConsoleKey.Add;
-            Console.Clear();
-            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "course");
-
-            Console.WriteLine(messageAddContinue);
-            key = Console.ReadKey(true).Key;
-
-            while (key != ConsoleKey.Escape)
-            {
-                Course newCourse = CreateCourse();
-                Console.WriteLine("New course by ID {0} was added! \n", newCourse.ID);
-
-                Console.WriteLine(messageAddContinue);
-                key = Console.ReadKey(true).Key;
-
-            }
+            Log.Information("Consultation des détails de l'élève: " + selectedStudent.ID);
         }
 
-        public Course CreateCourse()
+        private static Student CreateStudentAndAddToList(string firstName, string lastName, AppData _appDataInitialised)
         {
-            Console.Clear();
-            Console.WriteLine("Addind a new course.");
-            Console.Write("Name of course: ");
-            string courseName = Console.ReadLine();
+            Student newStudent = DataTools.CreateNewStudent(_appDataInitialised, firstName, lastName);
+            DataTools.AddStudentToTheList(_appDataInitialised, newStudent);
+            return newStudent;
+        }
 
-            int maxID = GetMaxIDOfCourses() + 1;
+        private static Student SelectStudentFromList(AppData _appDataInitialised)
+        {
+            uint selectedIDStudent = ReadLineAndControls.DisplayStudentsForSelection(_appDataInitialised);
+            // return DataTools.FindStudentByID(selectedIDStudent, _appDataInitialised);
+            return DataTools.FindStudentByIndex(selectedIDStudent, _appDataInitialised);
+        }
+        #endregion <----------------------------------------------------------------------STUDENTS
 
-            Course newCourse = new Course(courseName, maxID);
-            CoursesList.Add(newCourse);
-            
-            Log.Information("Ajout d'un nouveau cours : " + courseName);
-            JsonFiles.SaveJsonFile(this);
-
+        #region COURSE-------------------------------------------------------------------------->
+        public static Course CreateCourse(AppData _appDataInitialised)
+        {
+            Course newCourse = DataTools.CreateNewCourse(_appDataInitialised, ReadLineAndControls.ReadStringWithNullAndSpasesControl("Name of course: "));
+            DataTools.AddCourseToTheList(_appDataInitialised, newCourse);
+            Log.Information("Ajout d'un nouveau cours : " + newCourse.Name);
+            Save(_appDataInitialised);
             return newCourse;
         }
 
-        private int GetMaxIDOfCourses()
+        public static void DeleteCourse(AppData _appDataInitialised)
         {
-            int result = 0;
-            if (CoursesList.Count != 0) result = CoursesList.Max(x => x.ID);
-            return result;
-        }
+            Console.WriteLine(ConstantsAPP.MESSAGEDELETECOURSE);
 
-        public void DisplayListOfCours()
-        {
-            Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
-            foreach (Course stucoursent in CoursesList)  Console.WriteLine("ID  :{0}. Name: {1}", stucoursent.ID, stucoursent.Name);
-            Console.WriteLine(ConstantsAPP.MESSAGELINESEPARATOR);
+            Course courseToDelete = CouseSelectionByID(_appDataInitialised);
 
-        }
+            Console.WriteLine(ConstantsAPP.MESSAGEWARNINGDELETECOURSE, courseToDelete.Name);
 
-        public void DeleteCourse()
-        {
-            int idCourseToDelete;
-            ConsoleKey key = ConsoleKey.Add;
-            Console.Clear();
+            bool deletingConfirmed = ReadLineAndControls.WarningBeforeDeletingCourse();
 
-            do
+            if (deletingConfirmed)
             {
-                Console.WriteLine("You want to delete a course. Select the ID of cours for delete, please. ");
-                DisplayListOfCours();
-            } while (!Int32.TryParse(Console.ReadLine(), out idCourseToDelete) || CoursesList.Find(x => x.ID == idCourseToDelete) == null);
+                ConfirmationCourseDeleting(courseToDelete, _appDataInitialised);
 
-            Course courseToDelete = CoursesList.Find(x => x.ID == idCourseToDelete);
+                Save(_appDataInitialised);
 
-            Console.WriteLine("Every note relating to this course will be deleted! Are you sure you want to delete the course {0}? Y/N", courseToDelete.Name);
-            do
-            {
-                Console.WriteLine("Enter Y to confirm or N to cancel deleting!");
-                key = Console.ReadKey(true).Key;
-            } while (key != ConsoleKey.Y && key != ConsoleKey.N);
-
-            if (key == ConsoleKey.Y)
-            {
-                foreach (Student student in StudentsList)
-                {
-                    student.DeleteNotesByCourse(courseToDelete.ID);
-                }
-                CoursesList.Remove(courseToDelete);
+                Log.Information("Suppression de cours: " + courseToDelete.Name);
+                Log.Information("Chaque note relative à ce cours a été supprimée!");
             }
-
-            JsonFiles.SaveJsonFile(this);
-
-            Log.Information("Supprimer le cours :" + courseToDelete);
-
-
         }
 
-
-        /////////////////////////////////////////////////////////////////
-        public void AddNotes()
+        private static void ConfirmationCourseDeleting(Course courseToDelete, AppData _appDataInitialised)
         {
-            Console.Clear();
-            string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note"); 
-
-            Console.WriteLine(messageAddContinue);
-            int selectedIDStudent;
-
-            do
+            foreach (Student student in _appDataInitialised.StudentsList)
             {
-                Console.Write("To select a student type corresponding ID from the list following:\n");
-                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
-                DisplayListOfStudents();
-                Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
-                Console.Write("ID of student:");
-
-            } while (!Int32.TryParse(Console.ReadLine(), out selectedIDStudent) || StudentsList.Find(x => x.ID == selectedIDStudent) == null);
-
-            Console.Clear();
-            Student selectedStudent = StudentsList.Find(x => x.ID == selectedIDStudent);
-
-            DisplayInformationForStudent(selectedStudent);
-
-            CreateNoteForStudentParCours(selectedStudent);
-
-            JsonFiles.SaveJsonFile(this);
-            
+                student.DeleteNotesByCourse(courseToDelete.ID);
+            }
+            _appDataInitialised.CoursesList.Remove(courseToDelete);
         }
 
-
-        //////////////////////////////////////////////////
-        public void CreateNoteForStudentParCours(Student student)
+        private static Course CouseSelectionByID(AppData _appDataInitialised)
         {
-            int selectedIDCourse;
-            ConsoleKey key = ConsoleKey.Add;
+            uint idCourse = ReadLineAndControls.DisplayCouresForSelection(_appDataInitialised);
+           
+            return DataTools.FindCourseByIndex(idCourse, _appDataInitialised);
+            // return DataTools.FindCourseByID(idCourse, _appDataInitialised);
+        }
+        #endregion <-------------------------------------------------------------------------COURSES
 
+        #region NOTES-------------------------------------------------------------------------->
+        public static void AddNotes(AppData _appDataInitialised)
+        {
+            Console.Clear();
             string messageAddContinue = ConstantsAPP.MESSAGEADDCONTINUE.Replace("{0}", "note");
 
             Console.WriteLine(messageAddContinue);
-            key = Console.ReadKey(true).Key;
 
-            if (CoursesList.Count == 0)
-            {
-                Console.WriteLine("There is no courses added. Add at first a course");
-                return;
-            }
+            Student selectedStudent = SelectStudentFromList(_appDataInitialised);
 
-            while (key != ConsoleKey.Escape)
-            {
-                do
-                {
-                    Console.Write("To select a course type corresponding ID from the list following:\n");
-                    DisplayListOfCours();
-                    key = Console.ReadKey(true).Key;
+            Console.Clear();
 
-                } while (!Int32.TryParse(Console.ReadLine(), out selectedIDCourse) || CoursesList.Find(x => x.ID == selectedIDCourse) == null );
+            DisplayInformation.DisplayInformationForStudent(selectedStudent);
 
-                Course selectedCours = CoursesList.Find(x => x.ID == selectedIDCourse);
-                Console.WriteLine("Selected course: " + selectedCours.Name + "\n");
+            CreateNoteForStudentParCours(selectedStudent, _appDataInitialised);
 
-                int noteOfCourse;
-                do
-                {
-                    Console.Write("Enter note :");
-                    key = Console.ReadKey(true).Key;
-
-                } while (!Int32.TryParse(Console.ReadLine(), out noteOfCourse));
-
-                Console.Write("Enter appreciation :");
-
-                string appreciation = Console.ReadLine();
-
-                student.AddTheNoteForStudent(selectedCours, noteOfCourse, appreciation);
-                
-                Log.Information("Add note:" + selectedCours.Name +  noteOfCourse +"/" + ConstantsAPP.MAXNOTE + " " + appreciation);
-
-                
-            }
+            Save(_appDataInitialised);
         }
 
-        public void DisplayInformationForStudentNotes(Student selectedStudent)
+        public static void CreateNoteForStudentParCours(Student student, AppData _appDataInitialised)
         {
-            Console.WriteLine("Résultats scolaires:\n");
+            if (ReadLineAndControls.IsListIsEmpty(_appDataInitialised.CoursesList)) return;
 
-            List<Note> studentNotes = selectedStudent.GetStudentsNotes();
-            double notesTotal = 0; double avarageNotes = 0;
-            if (studentNotes != null)
+            Course selectedCours = CouseSelectionByID(_appDataInitialised);
+
+            Console.WriteLine("Selected course: " + selectedCours.Name + "\n");
+
+            uint noteEntered = ReadLineAndControls.EnterNoteByCourse();
+
+            string? appreciation = ReadLineAndControls.EnterAppreciation();
+
+            student.AddTheNoteForStudent(selectedCours, noteEntered, appreciation);
+
+            Log.Information("Add note:" + selectedCours.Name + noteEntered + "/" + ConstantsAPP.MAXNOTE + " " + appreciation);
+        }
+
+        #endregion <--------------------------------------------------------------------------NOTES
+
+        #region PROMOTIONS-------------------------------------------------------------------------->
+        public static void StudentsListByPromotions(AppData _appDataInitialised)
+        {
+            DisplayInformation.DisplayStudentInformationByPromotions(DataTools.GetPromoStudentsList(_appDataInitialised));
+        }
+
+        public static void PromotionsList(AppData _appDataInitialised)
+        {
+            DisplayInformation.DisplayPromotions(DataTools.GetPromoStudentsList(_appDataInitialised));
+        }
+        public static void CoursesAvarageByPromotions(AppData _appDataInitialised)
+        {
+            string selectedPromo = ReadLineAndControls.SelectThePromotionFromList(DataTools.GetPromoStudentsList(_appDataInitialised), _appDataInitialised);
+            List<Student> studentsPromo = DataTools.GetStudentsListByPromo(_appDataInitialised, selectedPromo);
+            Dictionary<Course, List<double>> NotesTable = new Dictionary<Course, List<double>>();
+          
+            foreach (Student student in studentsPromo)
             {
-                foreach (Note note in studentNotes)
+                foreach (Note note in student.NotesOfStudent)
                 {
-                    //Console.WriteLine("\t Cours : " + note.Course.Name);
-                    Console.WriteLine("\t Cours : " + note.GetTheNoteCourseByID(CoursesList).Name);
-                    Console.WriteLine("\t \t Note : " + note.Value + "/" + Convert.ToString(ConstantsAPP.MAXNOTE));
-                    Console.WriteLine("\t \t Appréciation : " + note.Appreciation + "\n");
-
-                    notesTotal = notesTotal + note.Value;
+                    Course course = note.GetTheNoteCourseByID(_appDataInitialised.CoursesList);
+                    if (!NotesTable.ContainsKey(course)) NotesTable.Add(course, new List<double>());
+                    NotesTable[course].Add(note.Value);
                 }
             }
-            if (studentNotes.Count != 0) avarageNotes = notesTotal / studentNotes.Count;
-
-            Console.WriteLine("\t Moyenne : " + Convert.ToString(avarageNotes));
-            Console.Write(ConstantsAPP.MESSAGELINESEPARATOR);
+            DisplayInformation.DisplayCoursesPromo(NotesTable);
         }
 
+        public static void PromotionAvarageByCourses(AppData _appDataInitialised)
+        {
+            List<Student> students = DataTools.GetPromoStudentsList(_appDataInitialised);
+            List<string> promoStudentsDistinct = DataTools.GetUniqPomotionListForStudentList(students);
+            var courseListDistinct = DataTools.GetListOfUniquCoursesIDFromStudentsList(students, _appDataInitialised);
+            DisplayInformation.DisplayPromoAvarageByCourse(students, courseListDistinct, promoStudentsDistinct);
+        }
 
+        #endregion <--------------------------------------------------------------------------PROMOTIONS
     }
-
-
 }

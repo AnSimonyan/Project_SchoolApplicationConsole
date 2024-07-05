@@ -12,41 +12,35 @@ using Serilog.Events;
 
 
 
-namespace Projet1_ApplicationConsole
+namespace Projet1_ApplicationConsole.Data
 {
-    internal class JsonFiles
+    public class Database : IDatabase
     {
-
-        public static void SaveJsonFile(UserTools userTool)
+        public void SaveData(AppData inisialisedAppData)
         {
             string fileNameStudents = ConstantsAPP.JSONFILENAME + "Scool.json";
 
-            string json = JsonConvert.SerializeObject(userTool, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(inisialisedAppData, Formatting.Indented);
 
             File.WriteAllText(fileNameStudents, json);
 
         }
 
-        public static UserTools ReadJsonFile()
+        public AppData InitialiseData()
         {
             string fileNameStudents = ConstantsAPP.JSONFILENAME + "Scool.json";
             try
             {
                 var jsonString = File.ReadAllText(fileNameStudents);
-                return JsonConvert.DeserializeObject<UserTools>(jsonString);
+                return JsonConvert.DeserializeObject<AppData>(jsonString);
             }
             catch
             {
-                return null;
+                return new AppData();
             }
-
-
-
-
-
         }
-        
 
+        
 
     }
 }
