@@ -17,5 +17,6 @@ namespace Projet1_ApplicationConsole
         public const string LOGPATH         = "H:/Франция/WebDev/PO/Projet1_ApplicationConsole/Log.txt";
 
         public const int MAXNOTE = 20;
+        public const int MAXAGEOFSTUDENT = 100;
     }
 }

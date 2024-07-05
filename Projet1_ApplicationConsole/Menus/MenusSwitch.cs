@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Projet1_ApplicationConsole;
+using Projet1_ApplicationConsole.Data;
 
 namespace Projet1_ApplicationConsole.Menus
 {
@@ -185,7 +185,7 @@ namespace Projet1_ApplicationConsole.Menus
                     break;
                 case MenuePromotions.AveragePromotionPerCours:
                    
-                   // new UserTools(appData).AddNotes();
+                     UserTools.PromotionAvarageByCourses(appData);
                     ReturnMenuInputLevel(3, appData);
                     break;
                 case MenuePromotions.Exit:

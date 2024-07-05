@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using Projet1_ApplicationConsole.Data;
 
 
 namespace Projet1_ApplicationConsole.Menus

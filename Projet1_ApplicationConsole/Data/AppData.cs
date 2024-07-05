@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Projet1_ApplicationConsole.App;
 
-namespace Projet1_ApplicationConsole
+namespace Projet1_ApplicationConsole.Data
 {
     public class AppData
     {
